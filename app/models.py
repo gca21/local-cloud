@@ -1,27 +1,31 @@
 from sqlalchemy import Column, Integer, String, DateTime, Boolean, ForeignKey
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, Mapped, mapped_column
 from app.database import Base
 from datetime import datetime, timezone
+from typing import Optional
 
 class User(Base):
     __tablename__ = "users"
-    id = Column(Integer, primary_key=True, index=True)
-    username = Column(String, unique=True, index=True, nullable=False)
-    password = Column(String, nullable=False)
+    
+    id: Mapped[int] = mapped_column(primary_key=True, index=True)
+    username: Mapped[str] = mapped_column(unique=True, index=True)
+    password: Mapped[str]
 
 class Item(Base):
     __tablename__ = "items"
-    id = Column(Integer, primary_key=True, index=True)
-    name = Column(String, nullable=False)
-    is_dir = Column(Boolean, nullable=False)
-    parent_id = Column(Integer, ForeignKey("items.id", ondelete="CASCADE"), nullable=True)
     
-    path = Column(String, unique=True)
-    size = Column(Integer, nullable=True)
-    mimetype = Column(String, nullable=True)
+    id: Mapped[int] = mapped_column(primary_key=True, index=True)
+    name: Mapped[str]
+    is_dir: Mapped[bool]
+    parent_id: Mapped[Optional[int]] = mapped_column(ForeignKey("items.id", ondelete="CASCADE"), nullable=True,)
+        
+    path: Mapped[Optional[str]] = mapped_column(unique=True)
+    size: Mapped[Optional[int]]
+    mimetype: Mapped[Optional[str]]
     
-    created_at = Column(DateTime, default=datetime.now(timezone.utc))
-    updated_at = Column(DateTime, default=datetime.now(timezone.utc), onupdate=datetime.now(timezone.utc))
+    created_at: Mapped[Optional[datetime]] = mapped_column(default=datetime.now(timezone.utc))
+    updated_at: Mapped[Optional[datetime]] = mapped_column(default=datetime.now(timezone.utc), onupdate=datetime.now(timezone.utc))
     
-    children = relationship("Item", backref="parent", remote_side=[id], cascade="all, delete-orphan")
+    parent: Mapped[Optional["Item"]] = relationship(back_populates="children", remote_side=[id])
+    children: Mapped[list["Item"]] = relationship(back_populates="parent", cascade="all, delete-orphan")
     
