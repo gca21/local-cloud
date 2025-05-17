@@ -18,10 +18,10 @@ class ItemBase(BaseModel):
     id: Annotated[int, Field(description="Unique identifier of the item")]
     name: Annotated[str, Field(description="Name of the item")]
     is_dir: Annotated[bool, Field(description="Wether an item is a directory or not")]
-    parent_id: Annotated[int | None, Field(description="Unique identifier of the parent item")]
+    parent_id: Annotated[int | None, Field(default=None, description="Unique identifier of the parent item")]
     path: Annotated[str, Field(description="Item relative path in the uploads folder")]
-    size: Annotated[int | None, Field(description="File size in bytes")]
-    mimetype: Annotated[str | None, Field(description="Mimetype of the file")]
+    size: Annotated[int | None, Field(default=None, description="File size in bytes")]
+    mimetype: Annotated[str | None, Field(default=None, description="Mimetype of the file")]
     created_at: Annotated[datetime, Field(description="Creation date of the item")]
     updated_at: Annotated[datetime, Field(description="Update date of the item")]
     
@@ -33,6 +33,10 @@ class ItemBase(BaseModel):
 class ItemCreate(BaseModel):
     name: Annotated[str, Field(description="Name of the item")]
     is_dir: Annotated[bool, Field(description="Wether an item is a directory or not")]
-    parent_id: Annotated[int | None, Field(description="Unique identifier of the parent item")]
-    size: Annotated[int | None, Field(description="File size in bytes")]
-    mimetype: Annotated[str | None, Field(description="Mimetype of the file")]
+    parent_id: Annotated[int | None, Field(default=None, description="Unique identifier of the parent item")]
+    size: Annotated[int | None, Field(default=None, description="File size in bytes")]
+
+class ItemUpdate(BaseModel):
+    id: Annotated[int, Field(description="Unique identifier of the item")]
+    name: Annotated[str | None, Field(default=None, description="Name of the item")]
+    parent_id: Annotated[int | None, Field(default=None, description="Unique identifier of the parent item")]
