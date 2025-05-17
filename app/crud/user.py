@@ -8,6 +8,11 @@ def username_exists(db: Session, username: str) -> bool:
     result = db.execute(stmt).first()
     return result is not None
 
+def read_all_users(db: Session) -> list[User]:
+    stmt = select(User)
+    result = db.execute(stmt).scalars.all()
+    return result
+
 def read_user(db: Session, id: int) -> User | None:
     stmt = select(User).where(User.id == id)
     result = db.execute(stmt).first()
