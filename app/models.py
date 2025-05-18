@@ -3,6 +3,7 @@ from sqlalchemy.orm import relationship, Mapped, mapped_column
 from app.database import Base
 from datetime import datetime, timezone
 from typing import Optional
+import uuid
 
 class User(Base):
     __tablename__ = "users"
@@ -14,10 +15,10 @@ class User(Base):
 class Item(Base):
     __tablename__ = "items"
     
-    id: Mapped[int] = mapped_column(primary_key=True, index=True)
+    id: Mapped[str] = mapped_column(primary_key=True, index=True, default=lambda: str(uuid.uuid4()))
     name: Mapped[str]
     is_dir: Mapped[bool]
-    parent_id: Mapped[Optional[int]] = mapped_column(ForeignKey("items.id", ondelete="CASCADE"), nullable=True,)
+    parent_id: Mapped[Optional[str]] = mapped_column(ForeignKey("items.id", ondelete="CASCADE"), nullable=True,)
         
     path: Mapped[str] = mapped_column(unique=True)
     size: Mapped[Optional[int]] # NULL for files

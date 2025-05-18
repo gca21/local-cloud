@@ -102,13 +102,13 @@ def test_update_name_and_parent(test_db: Session):
     assert updated.path == build_path(test_db, "renamed.txt", parent.id)
 
 def test_update_nonexistent_item(test_db: Session):
-    update_data = ItemUpdate(id=999, name="newname.txt")
+    update_data = ItemUpdate(id="999", name="newname.txt")
     result = update_item(test_db, update_data)
     assert result is None
 
 def test_update_with_invalid_parent(test_db: Session):
     item = create_item_helper(test_db, name="file.txt", is_dir=False, path="uploads/file.txt")
-    update_data = ItemUpdate(id=item.id, parent_id=999)  # Non-existent parent
+    update_data = ItemUpdate(id=item.id, parent_id="999")  # Non-existent parent
     
     result = update_item(test_db, update_data)
     assert result is None
