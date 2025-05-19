@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, File, UploadFile, Form
+from fastapi.responses import FileResponse
 from app.schemas import ItemBase, ItemCreate
 from app.models import Item
 from app.dependencies import get_db, get_item_dao, get_uploads_manager
@@ -35,7 +36,7 @@ async def create_item(
         raise HTTPException(status_code=404, detail="Specified parent does not exist")
     
     # Store the actual file
-    if (not item.is_dir):
+    if not item.is_dir:
         file_content = await file.read()
         u_manager.create_or_update_file(db_item.id, file_content)
     
@@ -50,10 +51,10 @@ def remove_item(
 ):
     
     db_item = item_dao.delete_item(db, id)
-    if (db_item is None):
+    if db_item is None:
         raise HTTPException(status_code=404, detail="Item with that id doesn't exist")
     
-    if (not db_item.is_dir):
+    if not db_item.is_dir:
         u_manager.remove_file(id)
     else:
         remove_children_files(db_item, u_manager)
@@ -65,3 +66,10 @@ def remove_children_files(parent: Item, u_manager: UploadsManager):
             remove_children_files(child, u_manager)
         else:
             u_manager.remove_file(child.id)
+
+@router.get("{id}", response_class=FileResponse)
+async def read_file(id: str, db: Session = Depends(get_db), item_dao: ItemDAO = Depends(get_item_dao)):
+    db_item = item_dao.read_item(db, id)
+    if db_item is None:
+        return None
+    return FileResponse(path=f"uploads/{db_item.id}", filename=db_item.name, media_type=db_item.mimetype)

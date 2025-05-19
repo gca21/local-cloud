@@ -176,3 +176,4 @@ cython_debug/
 # Local cloud
 cloud.db
 .vscode/
+uploads/
