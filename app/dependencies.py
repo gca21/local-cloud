@@ -1,5 +1,6 @@
 from app.database import SessionLocal
 from app.crud.item import ItemDAO
+from app.uploads_manager import UploadsManager
 
 def get_db():
     db = SessionLocal()
@@ -10,3 +11,6 @@ def get_db():
 
 def get_item_dao():
     return ItemDAO()
+
+def get_uploads_manager():
+    return UploadsManager()

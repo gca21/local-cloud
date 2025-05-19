@@ -10,7 +10,7 @@ class ItemDAO:
     def __init__(self):
         pass
     
-    def build_path(self, db: Session, filename: str, parent_id: int | None) -> str:
+    def build_path(self, db: Session, filename: str, parent_id: str | None) -> str:
         if parent_id is None:
             return f"uploads/{filename}"
         
@@ -24,11 +24,11 @@ class ItemDAO:
         type, _ = mimetypes.guess_type(path)
         return type
 
-    def read_item(self, db: Session, id: int) -> Item | None:
+    def read_item(self, db: Session, id: str) -> Item | None:
         item = db.get(Item, id)
         return item
 
-    def read_children(self, db: Session, parent_id: int) -> list[Item]:
+    def read_children(self, db: Session, parent_id: str) -> list[Item]:
         stmt = select(Item).where(Item.parent_id == parent_id)
         result = db.execute(stmt).scalars().all()
         return result
@@ -45,7 +45,7 @@ class ItemDAO:
             is_dir=new_item.is_dir,
             parent_id=new_item.parent_id,
             path=new_path,
-            size=new_item.size,
+            # TODO - Store file size
             mimetype=self.get_mimetype(new_path),
         )
         
@@ -59,7 +59,7 @@ class ItemDAO:
         return model_item
 
     # Calculates and assigns the path of the children recursively
-    def update_children_paths(self, db: Session, parent_id: int):
+    def update_children_paths(self, db: Session, parent_id: str):
         children = self.read_children(db, parent_id)
         for child in children:
             child.path = self.build_path(db, child.name, child.parent_id)
@@ -102,7 +102,7 @@ class ItemDAO:
         
         return db_item
 
-    def delete_item(db: Session, id: int) -> User | None:
+    def delete_item(self, db: Session, id: str) -> User | None:
         item = db.get(Item, id)
         if item is None:
             return None

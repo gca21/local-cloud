@@ -15,3 +15,4 @@ class UploadsManager:
 
     def remove_file(self, filename: str):
         os.remove(f"uploads/{filename}")
+        

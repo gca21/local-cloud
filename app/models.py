@@ -21,8 +21,8 @@ class Item(Base):
     parent_id: Mapped[Optional[str]] = mapped_column(ForeignKey("items.id", ondelete="CASCADE"), nullable=True,)
         
     path: Mapped[str] = mapped_column(unique=True)
-    size: Mapped[Optional[int]] # NULL for files
-    mimetype: Mapped[Optional[str]] # NULL for files
+    size: Mapped[Optional[int]] # NULL for directories
+    mimetype: Mapped[Optional[str]] # NULL for directories
     
     created_at: Mapped[Optional[datetime]] = mapped_column(default=datetime.now(timezone.utc))
     updated_at: Mapped[Optional[datetime]] = mapped_column(default=datetime.now(timezone.utc), onupdate=datetime.now(timezone.utc))
