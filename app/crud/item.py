@@ -45,7 +45,7 @@ class ItemDAO:
             is_dir=new_item.is_dir,
             parent_id=new_item.parent_id,
             path=new_path,
-            # TODO - Store file size
+            size=new_item.size,
             mimetype=self.get_mimetype(new_path),
         )
         
