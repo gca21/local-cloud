@@ -25,7 +25,12 @@ async def create_item(
     u_manager: UploadsManager = Depends(get_uploads_manager)
 ):
     # Reconstruct the pydantic schema
-    item = ItemCreate(name=name, is_dir=(file is None), parent_id=parent_id, size=file.size)
+    item = ItemCreate(
+        name=name,
+        is_dir=(file is None),
+        parent_id=parent_id,
+        size=None if file is None else file.size
+    )
     
     # Try to create the entry in the database
     try:
