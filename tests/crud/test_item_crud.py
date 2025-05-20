@@ -121,3 +121,20 @@ def test_delete_existing_item(test_db: Session):
 def test_delete_nonexistent_item(test_db: Session):
     deleted = dao.delete_item(test_db, "non-existent-id")
     assert deleted is None
+
+def test_read_children_with_none_parent(test_db: Session):
+    item1 = create_item_helper(test_db, name="root1.txt", is_dir=False, path="uploads/root1.txt")
+    item2 = create_item_helper(test_db, name="root2.txt", is_dir=False, path="uploads/root2.txt")
+
+    parent = create_item_helper(test_db, name="dir", is_dir=True, path="uploads/dir")
+    create_item_helper(test_db, name="child.txt", is_dir=False, path="uploads/dir/child.txt", parent_id=parent.id)
+
+    children = dao.read_children(test_db, None)
+
+    children_ids = {str(item.id) for item in children}
+    expected_ids = {str(item1.id), str(item2.id), str(parent.id)}
+
+    assert children_ids == expected_ids
+
+
+

@@ -28,8 +28,12 @@ class ItemDAO:
         item = db.get(Item, id)
         return item
 
-    def read_children(self, db: Session, parent_id: str) -> list[Item]:
-        stmt = select(Item).where(Item.parent_id == parent_id)
+    def read_children(self, db: Session, parent_id: str | None) -> list[Item]:
+        if parent_id is None:
+            stmt = select(Item).where(Item.parent_id.is_(None))
+        else:
+            stmt = select(Item).where(Item.parent_id == parent_id)
+
         result = db.execute(stmt).scalars().all()
         return result
 
