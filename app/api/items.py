@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, File, UploadFile, Form
 from fastapi.responses import FileResponse
-from app.schemas import ItemBase, ItemCreate
+from app.schemas import ItemBase, ItemCreate, ItemUpdate
 from app.models import Item
 from app.dependencies import get_db, get_item_dao, get_uploads_manager
 from app.crud.item import ItemDAO
@@ -78,3 +78,13 @@ async def read_file(id: str, db: Session = Depends(get_db), item_dao: ItemDAO = 
     if db_item is None:
         return None
     return FileResponse(path=f"uploads/{db_item.id}", filename=db_item.name, media_type=db_item.mimetype)
+
+@router.put("", response_model=ItemBase)
+def update_item(updated_item: ItemUpdate, db: Session = Depends(get_db), item_dao: ItemDAO = Depends(get_item_dao)):
+    try:
+        db_item = item_dao.update_item(db, updated_item)
+        if db_item is None:
+            raise HTTPException(status_code=404, detail="Item with id provided not found")
+        return db_item
+    except IntegrityError:
+        raise HTTPException(status_code=400, detail="Resource already exists")
